@@ -1,16 +1,22 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from staff.models import Products
 from customer.models import Cart, Profile
-from customer.serializers import Product_serializers, Cart_serializers
+from customer.serializers import Product_serializers, Cart_serializers, Profile_serializer
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 
 class HomeView(APIView):
     def get(self, request):
         data=Products.objects.all()
         serial=Product_serializers(data, many=True)
         return Response(serial.data)
-    
+
+class IndividualProductView(APIView):
+    def get(self, request, pk):
+        data=get_object_or_404(Products, id=pk)
+        serial=Product_serializers(data)
+        return Response(serial.data)
 
 class CartView(APIView):
     def get(self, request):
@@ -18,7 +24,17 @@ class CartView(APIView):
         data=Cart.objects.filter(profile=profile_data)
         serial=Cart_serializers(data, many=True)
         return Response(serial.data)
+    
+    def post(self, request):
+        cart_data=Cart_serializers(data=request.data)
+        if cart_data.is_valid():
+            user_data=Profile.objects.get(user=request.user)
+            cart_data.save(profile=user_data)
+            return Response(cart_data.data)
 
 class ProfileView(APIView):
     def get(self, request):
-        
+        data=Profile.objects.get(user=request.user)
+        serial=Profile_serializer(data)
+        return Response(serial.data)
+    
