@@ -2,10 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from staff.models import Products
 from customer.models import Cart, Profile
-from customer.serializers import Product_serializers, Cart_serializers, Profile_serializer
+from customer.serializers import Product_serializers, Cart_serializers, Profile_serializer, Cart_write_serializer, Profile_write_serializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 class HomeView(APIView):
     def get(self, request):
@@ -29,11 +30,12 @@ class CartView(APIView):
 
     
     def post(self, request):
-        cart_data=Cart_serializers(data=request.data)
+        cart_data=Cart_write_serializer(data=request.data)
         if cart_data.is_valid():
             user_data=Profile.objects.get(user=request.user)
-            cart_data.save(profile=user_data)
-            return Response(cart_data.data)
+            cart=cart_data.save(profile=user_data)
+            return Response(Cart_serializers(cart).data, status=status.HTTP_201_CREATED)
+        return Response(cart_data.errors, status=status.HTTP_400_BAD_REQUEST)
             
 
 class ProfileView(APIView):
@@ -45,8 +47,9 @@ class ProfileView(APIView):
     
     def put(self, request):
         instance=Profile.objects.get(user=request.user)
-        serial=Profile_serializer(instance, data=request.data)
+        serial=Profile_write_serializer(instance, data=request.data, partial=True)
         if serial.is_valid():
-            serial.save()
-            return Response(serial.data)
+            profile=serial.save()
+            return Response(Profile_serializer(profile).data)
+        return Response(serial.errors, status=status.HTTP_400_BAD_REQUEST)
     

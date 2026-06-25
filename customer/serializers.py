@@ -1,6 +1,6 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
 from staff.models import Products, Category, Brands
-from customer.models import Profile, Cart
+from customer.models import Profile, Cart, Address
 from whoisthis.serializers import User_serializer
 
 class Category_serializer(ModelSerializer):
@@ -35,3 +35,25 @@ class Cart_serializers(ModelSerializer):
     class Meta:
         model=Cart
         fields=['product', 'added_on', 'profile', 'quantity']
+
+
+class Profile_write_serializer(ModelSerializer):
+    address=PrimaryKeyRelatedField(queryset=Address.objects.all(), allow_null=True, required=False)
+    class Meta:
+        model=Profile
+        fields=['address', 'phoneNo', 'slug']
+
+
+class Product_write_serializer(ModelSerializer):
+    category=PrimaryKeyRelatedField(queryset=Category.objects.all())
+    brand=PrimaryKeyRelatedField(queryset=Brands.objects.all())
+    class Meta:
+        model=Products
+        fields=['name', 'description', 'price', 'stock', 'category', 'brand', 'isactive', 'slug']
+
+
+class Cart_write_serializer(ModelSerializer):
+    product=PrimaryKeyRelatedField(queryset=Products.objects.all())
+    class Meta:
+        model=Cart
+        fields=['product', 'quantity']
