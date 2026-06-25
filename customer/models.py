@@ -9,7 +9,7 @@ class Address(models.Model):
 
 class Profile(models.Model):
     user=models.OneToOneField(User, on_delete=models.CASCADE)
-    address=models.OneToOneField(Address, on_delete=models.CASCADE)
+    address=models.OneToOneField(Address, on_delete=models.CASCADE, null=True)
     phoneNo=models.CharField(max_length=15)
     date_joined=models.DateField(auto_now_add=True)
     slug=models.SlugField(unique=True, null=True)

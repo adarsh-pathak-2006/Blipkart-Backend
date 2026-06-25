@@ -5,9 +5,11 @@ from rest_framework.views import APIView
 from staff.models import Products
 from customer.serializers import Product_serializers
 from customer.models import Profile
+from rest_framework.permissions import IsAdminUser
 
 
 class Profile_Admin_API(APIView):
+    permission_classes=[IsAdminUser]
     def get(self, request):
         data=Profile.objects.all()
         serial=Profile_serializer(data, many=True)
@@ -20,6 +22,7 @@ class Profile_Admin_API(APIView):
             return Response(serial.data)
         
 class Profile_individual_API(APIView):
+    permission_classes=[IsAdminUser]
     def get(self, request, slug):
         data=get_object_or_404(Profile, slug=slug)
         serial=Profile_serializer(data)
@@ -39,6 +42,7 @@ class Profile_individual_API(APIView):
     
 
 class Products_Admin_view(APIView):
+    permission_classes=[IsAdminUser]
     def get(self, request):
         data=Products.objects.all()
         serial=Products_Admin_serializer(data, many=True)
@@ -51,6 +55,7 @@ class Products_Admin_view(APIView):
             return Response(serial.data)
 
 class Product_Admin_individual(APIView):
+    permission_classes=[IsAdminUser]
     def get(self, request, slug):
         data=get_object_or_404(Products, slug=slug)
         serial=Products_Admin_serializer(data)
