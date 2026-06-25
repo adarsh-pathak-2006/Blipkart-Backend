@@ -1,37 +1,69 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
-from django.contrib.auth.models import User
-from .serializers import User_serializers
+from staff.serializers import Profile_serializer, Products_Admin_serializer, Brands_Admin_serializer, Categories_Admin_serializer
 from rest_framework.views import APIView
+from staff.models import Products
+from customer.serializers import Product_serializers
+from customer.models import Profile
 
 
-class User_API(APIView):
+class Profile_Admin_API(APIView):
     def get(self, request):
-        user_data=User.objects.all()
-        serial=User_serializers(user_data, many=True)
-        return Response(serial.data)
-
-    def post(self, request):
-        serial=User_serializers(data=request.data)
-        if serial.is_valid():
-            serial.save()
-            return Response(serial.data)
-
-class UserIndividual_API(APIView):
-    def get(self, request, pk):
-        data=get_object_or_404(User, id=pk)
-        serial=User_serializers(data)
+        data=Profile.objects.all()
+        serial=Profile_serializer(data, many=True)
         return Response(serial.data)
     
-    def put(self, request, pk):
-        user_data=get_object_or_404(User, id=pk)
-        serial=User_serializers(user_data, data=request.data)
+    def post(self, request):
+        serial=Profile_serializer(data=request.data)
         if serial.is_valid():
             serial.save()
             return Response(serial.data)
         
-    def delete(self, request, pk):
-        user=get_object_or_404(User, id=pk)
-        user.delete()
-        return Response({ 'message':'user is deleted successfully' })
+class Profile_individual_API(APIView):
+    def get(self, request, slug):
+        data=get_object_or_404(Profile, slug=slug)
+        serial=Profile_serializer(data)
+        return Response(serial.data)
+    
+    def put(self, request, slug):
+        data_ind=get_object_or_404(Profile, slug=slug)
+        serial=Profile_serializer(data_ind, data=request.data)
+        if serial.is_valid():
+            serial.save()
+            return Response(serial.data)
+    
+    def delete(self, request, slug):
+        data_ind=get_object_or_404(Profile, slug=slug)
+        data_ind.delete()
+        return Response({ 'message':'data is successfully deleted' })
+    
 
+class Products_Admin_view(APIView):
+    def get(self, request):
+        data=Products.objects.all()
+        serial=Products_Admin_serializer(data, many=True)
+        return Response(serial.data)
+    
+    def post(self, request):
+        serial=Products_Admin_serializer(data=request.data)
+        if serial.is_valid():
+            serial.save()
+            return Response(serial.data)
+
+class Product_Admin_individual(APIView):
+    def get(self, request, slug):
+        data=get_object_or_404(Products, slug=slug)
+        serial=Products_Admin_serializer(data)
+        return Response(serial.data)
+    
+    def put(self, request, slug):
+        data_ind=get_object_or_404(Products, slug=slug)
+        serial=Products_Admin_serializer(data_ind, data=request.data)
+        if serial.is_valid():
+            serial.save()
+            return Response(serial.data)
+
+    def delete(self, request, slug):
+        data=get_object_or_404(Products, slug=slug)
+        data.delete()
+        return Response({ 'message':'the product is deleted successfully.' })

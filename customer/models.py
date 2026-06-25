@@ -12,6 +12,7 @@ class Profile(models.Model):
     address=models.OneToOneField(Address, on_delete=models.CASCADE)
     phoneNo=models.CharField(max_length=15)
     date_joined=models.DateField(auto_now_add=True)
+    slug=models.SlugField(unique=True, null=True)
 
     def __str__(self):
         return self.user.first_name
@@ -20,8 +21,8 @@ class Profile(models.Model):
 class Cart(models.Model):
     product=models.ForeignKey(Products, on_delete=models.CASCADE)
     added_on=models.DateTimeField(auto_now_add=True)
-    profile=models.OneToOneField(Profile, on_delete=models.CASCADE)
-    quantity=models.IntegerField()
+    profile=models.ForeignKey(Profile, on_delete=models.CASCADE)
+    quantity=models.PositiveIntegerField()
 
     def __str__(self):
         return self.product.name

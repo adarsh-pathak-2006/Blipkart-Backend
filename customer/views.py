@@ -14,8 +14,8 @@ class HomeView(APIView):
         return Response(serial.data)
 
 class IndividualProductView(APIView):
-    def get(self, request, pk):
-        data=get_object_or_404(Products, id=pk)
+    def get(self, request, slug):
+        data=get_object_or_404(Products, slug=slug)
         serial=Product_serializers(data)
         return Response(serial.data)
 
