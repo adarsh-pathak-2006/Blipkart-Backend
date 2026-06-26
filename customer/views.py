@@ -5,10 +5,11 @@ from customer.models import Cart, Profile
 from customer.serializers import Product_serializers, Cart_serializers, Profile_serializer, Cart_write_serializer, Profile_write_serializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 
 class HomeView(APIView):
+    permission_classes=[AllowAny]
     def get(self, request):
         data=Products.objects.filter(isactive=True)
         serial=Product_serializers(data, many=True)
